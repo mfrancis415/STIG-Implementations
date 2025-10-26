@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    This PowerShell script configures the Account Lockout Duration policy to 15 minutes, allowing 0 as a valid alternative (meaning admin unlock required).
+    This PowerShell script ensures the DC (battery) power setting policy is enabled by setting DCSettingIndex to 1 in the Power Settings registry key.
 
 .NOTES
     Author          : Monica Francis
