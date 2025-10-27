@@ -1,7 +1,7 @@
 <#
 .SYNOPSIS
-    This PowerShell script ensures the DC (on-battery) power setting policy is enabled by setting DCSettingIndex to 1 in the system power settings registry key.
-    
+    This PowerShell script ensures that the built-in Administrator account runs in Admin Approval Mode by setting FilterAdministratorToken to 1 in the system registry.
+
 .NOTES
     Author          : Monica Francis
     LinkedIn        : linkedin.com/in/mfrancis415/
@@ -26,17 +26,17 @@
 #>
 
 # Define the registry path and value
-$regPath = "HKLM:\SOFTWARE\Policies\Microsoft\Power\PowerSettings\0e796bdb-100d-47d6-a2d5-f7d2daa51f51"
-$valueName = "DCSettingIndex"
-$valueData = 1  # DWORD value
+$regPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"
+$valueName = "FilterAdministratorToken"
+$valueData = 1  # DWORD 1
 
-# Ensure the key exists
+# Ensure the registry key exists
 if (-not (Test-Path $regPath)) {
     New-Item -Path $regPath -Force | Out-Null
 }
 
-# Set the registry value
+# Set the DWORD value
 New-ItemProperty -Path $regPath -Name $valueName -Value $valueData -PropertyType DWord -Force | Out-Null
 
-# Verify the change
+# Confirm the change
 Get-ItemProperty -Path $regPath -Name $valueName
