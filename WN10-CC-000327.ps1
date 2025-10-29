@@ -30,22 +30,21 @@
 This PowerShell script ensures that PowerShell transcription logging is enabled by confirming that EnableTranscripting = 1 in the registry.
 #>
 
-Write-Host "=== Checking PowerShell Transcription Policy ===`n"
+Write-Host "=== Remediating PowerShell Transcription Policy ===`n"
 
-$regPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\Transcription"
-$valueName = "EnableTranscripting"
-$requiredValue = 1
+$RegPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\Transcription"
 
-if (Test-Path $regPath) {
-    $regValue = Get-ItemProperty -Path $regPath -ErrorAction SilentlyContinue
-
-    if ($regValue.$valueName -eq $requiredValue) {
-        Write-Host "Compliant: Transcription is enabled. EnableTranscripting = 1" -ForegroundColor Green
-    } else {
-        Write-Host "FINDING: EnableTranscripting is not set to 1" -ForegroundColor Red
-    }
-} else {
-    Write-Host "FINDING: Registry path for transcription does not exist" -ForegroundColor Red
+# Ensure the registry path exists
+If (-not (Test-Path $RegPath)) {
+    New-Item -Path $RegPath -Force | Out-Null
+    Write-Host "Created registry path: $RegPath"
 }
 
-Write-Host "`n=== Compliance Check Completed ==="
+# Set required value
+Set-ItemProperty -Path $RegPath -Name "EnableTranscripting" -Value 1 -Type DWord
+Write-Host "Set EnableTranscripting to 1"
+
+# Apply group policy update
+gpupdate /force | Out-Null
+
+Write-Host "`n=== Remediation Complete ==="
